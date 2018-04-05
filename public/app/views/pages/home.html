@@ -1,16 +1,16 @@
 <div class="row " ng-controller="homeController as home">
     <div class="col-sm-4 jumbotron mx-auto">
-        <button type="button" class="btn btn-block btn-outline-success" ng-click="home.showTriggers = false; home.showQuote = false; home.showFundsForm = true; home.showBuyForm = false; home.showSellStocks = false;">Add Funds</button>
+        <button type="button" class="btn btn-block btn-outline-success" ng-click="home.showUserSummary = false; home.showTriggers = false; home.showQuote = false; home.showFundsForm = true; home.showBuyForm = false; home.showSellStocks = false;">Add Funds</button>
         <br><br>
-        <button type="button" class="btn btn-block btn-outline-success"ng-click="home.showTriggers = false; home.showQuote = false; home.showFundsForm = false; home.showBuyForm = true; home.showSellStocks = false;">BUY</button>
+        <button type="button" class="btn btn-block btn-outline-success"ng-click="home.showUserSummary = false; home.showTriggers = false; home.showQuote = false; home.showFundsForm = false; home.showBuyForm = true; home.showSellStocks = false;">BUY</button>
         <br><br>
-        <button type="button" class="btn btn-block btn-outline-danger" ng-click="home.showTriggers = false; home.showQuote = false; home.showFundsForm = false; home.showBuyForm = false; home.showSellStocks = true;">SELL</button>
+        <button type="button" class="btn btn-block btn-outline-danger" ng-click="home.showUserSummary = false; home.showTriggers = false; home.showQuote = false; home.showFundsForm = false; home.showBuyForm = false; home.showSellStocks = true;">SELL</button>
         <br><br>
-        <button type="button" class="btn btn-block btn-outline-primary" ng-click="home.showTriggers = false; home.showQuote = true; home.showFundsForm = false; home.showBuyForm = false; home.showSellStocks = false;">QUOTE</button>
+        <button type="button" class="btn btn-block btn-outline-primary" ng-click="home.showUserSummary = false; home.showTriggers = false; home.showQuote = true; home.showFundsForm = false; home.showBuyForm = false; home.showSellStocks = false;">QUOTE</button>
         <br><br>
-        <button type="button" class="btn btn-block btn-outline-dark" ng-click="home.showTriggers = true; home.showQuote = false; home.showFundsForm = false; home.showBuyForm = false; home.showSellStocks = false;">TRIGGERS</button>
+        <button type="button" class="btn btn-block btn-outline-dark" ng-click="home.showUserSummary = false; home.showTriggers = true; home.showQuote = false; home.showFundsForm = false; home.showBuyForm = false; home.showSellStocks = false;">TRIGGERS</button>
         <br><br>
-        <button type="button" class="btn btn-block btn-outline-info" ng-click="home.getSummary(); home.showTriggers = false; home.showQuote = false; home.showFundsForm = false; home.showBuyForm = false; home.showSellStocks = false;">SUMMARY</button>
+        <button type="button" class="btn btn-block btn-outline-info" ng-click="home.showUserSummary = true; home.getSummary(); home.showTriggers = false; home.showQuote = false; home.showFundsForm = false; home.showBuyForm = false; home.showSellStocks = false;">SUMMARY</button>
         <br><br>
         <button type="button" class="btn btn-block btn-outline-info">CLEAR ALERTS</button>
         <br><br>
@@ -142,8 +142,7 @@
               </div>
 
               <!-- ########################################### DISPLAY SUMMARY  ###########################################-->
-              <div ng-show="home.userSummary">
-                yo
+              <div ng-show="home.showUserSummary">
                 <div ng-repeat="command in home.userSummary">
                   <div> - {{ command.command}} {{ command.priceDollars }} <span ng-show="command.priceCents">.</span>{{ command.priceCents }}</div>
                 </div>
