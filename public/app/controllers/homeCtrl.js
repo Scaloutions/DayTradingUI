@@ -1,7 +1,7 @@
 // Sample Controller
 angular.module('homeCtrl', ['homeService' ])
   
-  .controller('homeController', function($rootScope, $location, $scope, $http) {
+  .controller('homeController', function($rootScope, $location, $scope, $http, $compile) {
     
     var vm = this
 
@@ -12,7 +12,7 @@ angular.module('homeCtrl', ['homeService' ])
     vm.selectedStock = ""
     vm.fundsToAdd = ""
 
-    vm.userName = "Chrisanda"
+    vm.userName = "Chris"
 
     // vm.showBuyForm = true
     // vm.showFundsForm = true;
@@ -21,20 +21,31 @@ angular.module('homeCtrl', ['homeService' ])
     
     vm.stocks = [
       {
-        name: 'MSFT',
-        price: '34.35'
+        name: 'MSFT'
       },
       {
-        name: 'GOGL',
-        price: '35.78'
+        name: 'GOGL'
       },
       {
-        name: 'AMZN',
-        price: '36.35'
+        name: 'AMZN'
       }
     ]
 
-    
+    startTimer = function(timerParentId) {
+      var currentTimer = angular.element(document.getElementById('runningTimer'));
+      if (currentTimer) {
+        currentTimer.remove()
+      }
+      console.log('Starting timer now...')
+      var timer = angular.element(document.createElement('timer'));
+      timer.attr('interval', '1000');
+      timer.attr('id', 'runningTimer');
+      var el = $compile(timer)($scope);
+
+      angular.element(document.getElementById(timerParentId)).append(timer);
+
+      $scope.insertHere = el;
+    }
 
     vm.addFunds = function() {
       vm.showFundsForm = true;
@@ -71,8 +82,6 @@ angular.module('homeCtrl', ['homeService' ])
               showErrorAlert('Something went wrong!')
             }
           })
-
-
       }
     }
 
@@ -296,49 +305,88 @@ angular.module('homeCtrl', ['homeService' ])
         })
     }
 
+    vm.getNewQuote = function(index, timerParentId) {
+      console.log('Calling quote server for buy', index, timerParentId)
+      var body = {
+        userid: '123',
+        command: 'quote',
+        stock: index.name,
+        commandNumber: 1
+      }
+
+      var reqOptions = {
+        method: 'POST',
+        url: 'api/quote',
+        headers: vm.commonHeaders,
+        data: body
+      }
+
+      $http(reqOptions)
+      .then(function(results) {
+        console.log('Quote results are: ', results.data)
+        if (results.data.success) {
+          startTimer(timerParentId)
+          vm.userSummary = results.data.results
+          index.price = results.data.results.price
+        } else {
+          showErrorAlert('Something went wrong!')
+        }
+      }, function(err) {
+        console.log('err: ', err)
+      })
+    }
+
+    // vm.getNewQuote = function(index) {
+    //   console.log('Calling quote server for quote', index)
+    //   var body = {
+    //     userid: '123',
+    //     command: 'quote',
+    //     stock: index.name,
+    //     commandNumber: 1
+    //   }
+
+    //   var reqOptions = {
+    //     method: 'POST',
+    //     url: 'api/quote',
+    //     headers: vm.commonHeaders,
+    //     data: body
+    //   }
+
+    //   $http(reqOptions)
+    //   .then(function(results) {
+    //     console.log('Quote results are: ', results.data)
+    //     if (results.data.success) {
+    //       startTimer('quoteTimer')
+    //       vm.userSummary = results.data.results
+    //       index.price = results.data.results.price
+    //     } else {
+    //       showErrorAlert('Something went wrong!')
+    //     }
+    //   }, function(err) {
+    //     console.log('err: ', err)
+    //   })
+    // }
+
     showSuccessAlert = function(successAlertText) {
+      vm.showAlert = true;
       vm.displaySuccessAlert = true
       vm.successAlertText = successAlertText
     }
 
     showErrorAlert = function(successAlertText) {
+      vm.showAlert = true;
       vm.displayErrAlert = true
       vm.ErrAlertText = successAlertText
     }
 
-    vm.getNewQuote = function(index) {
-      console.log('Calling quote server', index)
-      vm.showBuyForm = true;
-    }
 
 
-    makeHttpRequest = function(reqOptions) {
-      var reqOptions = {
-        method: 'POST',
-        uri: 'http://localhost:'+ config.RPSPort + '/api/' + commandRequest.Command,
-        body: {
-          userid: commandRequest.UserId,
-          priceDollars: parseFloat(commandRequest.PriceDollars),
-          stock: commandRequest.Stock,
-          command: commandRequest.Command,
-          commandNumber: parseInt(commandRequest.CommandNumber)
-        },
-        json: true
-      }
-    
-      httpRequest(reqOptions)
-        .then(function (result) {
-          // if (result.statusCode == 200) {
-          console.log('Results are:', result)
-          sequentialPromiseExecution(commandRequestsArray, index + 1)
-          // }
-        })
-        .catch(function (err) {
-          console.log('#ERROR', err)
-        })
-    }
+    // vm.getNewQuote = function(index) {
+    //   console.log('Calling quote server', index)
+    //   startTimer('quoteTimer')
+    // }
   })
-  .directive('timer', function($timeout, $compile) {
+  .directive('timer', function($timeout, $compile, $http) {
     return {
       restrict: 'E',
       scope: {
@@ -356,13 +404,13 @@ angular.module('homeCtrl', ['homeService' ])
         //Properties
         scope.startTime = scope.startTimeAttr ? new Date(scope.startTimeAttr) : new Date();
         scope.expired = false;
-        var countdown = 5; //defaults to 60 seconds
+        var countdown = 10; //defaults to 60 seconds
         
         function tick () {
           
           //How many milliseconds have passed: current time - start time
           scope.millis = new Date() - scope.startTime;
-          
+          console.log('countdown is:', countdown)
           if (countdown > 0) {
             scope.millis = countdown * 1000;
             countdown--;
@@ -370,6 +418,34 @@ angular.module('homeCtrl', ['homeService' ])
             scope.stop();
             scope.expired = true
             console.log('Your time is up!');
+
+
+            var body = {
+              userid: '123',
+              command: 'cancel_buy',
+              commandNumber: 1
+            }
+            
+            var reqOptions = {
+              method: 'POST',
+              url: 'api/cancel_buy',
+              headers:  {
+                'Content-Type': "application/json"
+              },
+              data: body
+              }
+      
+              $http(reqOptions)
+              .then(function(results) {
+                console.log('results are: ', results.data)
+                if (results.data.success) {
+                  console.log('Buy was successfully cancelled!')
+                } else {
+                  console.log('Something went wrong!')
+                }
+              }, function(err) {
+                console.log('err: ', err)
+              })
           }
       
           scope.seconds = Math.floor((scope.millis / 1000) % 60);

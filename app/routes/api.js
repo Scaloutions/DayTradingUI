@@ -37,6 +37,18 @@ module.exports = function(app, express) {
   next(); // make sure we go to the next routes and don't stop here
   });
 
+  apiRouter.route('/quote')
+    .post(function(req, res) {
+      var stock = {
+        stock: req.body.stock,
+        price: Math.random()*200
+      }
+      res.json({ 
+        success: true, 
+        results: stock
+      })
+    })
+
   apiRouter.route('/display_summary')
     .post(function(req, res) {
       res.json({ success: true, results: userHistory})

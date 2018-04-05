@@ -1,16 +1,16 @@
 <div class="row " ng-controller="homeController as home">
     <div class="col-sm-4 jumbotron mx-auto">
-        <button type="button" class="btn btn-block btn-outline-success" ng-click="home.showUserSummary = false; home.showTriggers = false; home.showQuote = false; home.showFundsForm = true; home.showBuyForm = false; home.showSellStocks = false;">Add Funds</button>
+        <button type="button" class="btn btn-block btn-outline-success" ng-click="home.displaySuccessAlert = false; home.displayErrAlert = false; home.showAlert = false; home.showUserSummary = false; home.showTriggers = false; home.showQuote = false; home.showFundsForm = true; home.showBuyForm = false; home.showSellStocks = false;">ADD Funds</button>
         <br><br>
-        <button type="button" class="btn btn-block btn-outline-success"ng-click="home.showUserSummary = false; home.showTriggers = false; home.showQuote = false; home.showFundsForm = false; home.showBuyForm = true; home.showSellStocks = false;">BUY</button>
+        <button type="button" class="btn btn-block btn-outline-success"ng-click="home.displaySuccessAlert = false; home.displayErrAlert = false; home.showAlert = false; home.showUserSummary = false; home.showTriggers = false; home.showQuote = false; home.showFundsForm = false; home.showBuyForm = true; home.showSellStocks = false;">BUY</button>
         <br><br>
-        <button type="button" class="btn btn-block btn-outline-danger" ng-click="home.showUserSummary = false; home.showTriggers = false; home.showQuote = false; home.showFundsForm = false; home.showBuyForm = false; home.showSellStocks = true;">SELL</button>
+        <button type="button" class="btn btn-block btn-outline-danger" ng-click="home.displaySuccessAlert = false; home.displayErrAlert = false; home.showAlert = false; home.showUserSummary = false; home.showTriggers = false; home.showQuote = false; home.showFundsForm = false; home.showBuyForm = false; home.showSellStocks = true;">SELL</button>
         <br><br>
-        <button type="button" class="btn btn-block btn-outline-primary" ng-click="home.showUserSummary = false; home.showTriggers = false; home.showQuote = true; home.showFundsForm = false; home.showBuyForm = false; home.showSellStocks = false;">QUOTE</button>
+        <button type="button" class="btn btn-block btn-outline-primary" ng-click="home.displaySuccessAlert = false; home.displayErrAlert = false; home.showAlert = false; home.showUserSummary = false; home.showTriggers = false; home.showQuote = true; home.showFundsForm = false; home.showBuyForm = false; home.showSellStocks = false;">QUOTE</button>
         <br><br>
-        <button type="button" class="btn btn-block btn-outline-dark" ng-click="home.showUserSummary = false; home.showTriggers = true; home.showQuote = false; home.showFundsForm = false; home.showBuyForm = false; home.showSellStocks = false;">TRIGGERS</button>
+        <button type="button" class="btn btn-block btn-outline-dark" ng-click="home.displaySuccessAlert = false; home.displayErrAlert = false; home.showAlert = false; home.showUserSummary = false; home.showTriggers = true; home.showQuote = false; home.showFundsForm = false; home.showBuyForm = false; home.showSellStocks = false;">TRIGGERS</button>
         <br><br>
-        <button type="button" class="btn btn-block btn-outline-info" ng-click="home.showUserSummary = true; home.getSummary(); home.showTriggers = false; home.showQuote = false; home.showFundsForm = false; home.showBuyForm = false; home.showSellStocks = false;">SUMMARY</button>
+        <button type="button" class="btn btn-block btn-outline-info" ng-click="home.displaySuccessAlert = false; home.displayErrAlert = false; home.showAlert = false; home.showUserSummary = true; home.getSummary(); home.showTriggers = false; home.showQuote = false; home.showFundsForm = false; home.showBuyForm = false; home.showSellStocks = false;">SUMMARY</button>
         <br><br>
         <button type="button" class="btn btn-block btn-outline-info">CLEAR ALERTS</button>
         <br><br>
@@ -20,7 +20,6 @@
     <div class="col-sm-8">
       <div class="jumbotron jumbotron-fluid">
           <div class="container">
-
             <!-- ########################################### BUY STOCKS ###########################################-->
             <div ng-show="home.showBuyForm">
               <h3>Buy Stocks</h3>
@@ -29,7 +28,7 @@
                       <label for="inputState"><strong>Select stock:</strong>&nbsp;</label>
                       <select id="inputState" class="form-control" ng-model="home.selectedStock" 
                         ng-options="stock.name for stock in home.stocks track by stock.name" 
-                        ng-change="home.getNewQuote(home.selectedStock)">
+                        ng-change="home.getNewQuote(home.selectedStock, 'quoteTimerForBuy')">
                       </select>
                     </div>
                     <br>
@@ -43,7 +42,7 @@
                   <h1 class="display-3">{{home.selectedStock.name }}</h1>
                   <label for="inputState"><strong>Price per share:</strong>&nbsp;</label> ${{ home.selectedStock.price}}
                   <br>
-                  <timer interval="1000" countdown="61"></timer>
+                  <div id="quoteTimerForBuy"></div>
                   <br>
                   <button type="submit" class="btn btn-primary" ng-click="home.confirmShareBuy()">Confirm Buy</button> 
                   <br><br>
@@ -100,21 +99,22 @@
                     <div class="form-group">
                         <label for="inputState"><strong>Select stock:</strong>&nbsp;</label>
                         <select id="inputState" class="form-control" ng-model="home.selectedStock" 
-                          ng-options="stock.name for stock in home.stocks track by stock.name">
+                          ng-options="stock.name for stock in home.stocks track by stock.name"
+                          ng-change="home.getNewQuote(home.selectedStock, 'quoteTimer')">
                         </select>
                       </div>
-                      <br>
                   </form>
                   <br>
                   <div ng-show="!!home.selectedStock"> 
                     <h1 class="display-3">{{home.selectedStock.name }}</h1>
                     <label for="inputState"><strong>Price per share:</strong>&nbsp;</label> ${{ home.selectedStock.price}}
                     <br>
-                    <timer interval="1000" countdown="61"></timer>
+                    <div id="quoteTimer"></div>
+                    <br>
                   </div>
               </div>
 
-              <!-- ########################################### TRIGGERS  ###########################################-->
+            <!-- ########################################### TRIGGERS  ###########################################-->
             <div ng-show="home.showTriggers">
                 <h3>Triggers</h3>
                 <form class="form-inline">
@@ -124,15 +124,13 @@
                           ng-options="stock.name for stock in home.stocks track by stock.name">
                         </select>
                       </div>
-                      <br>
                   </form>
                   <br>
-                  <br><br>
                   <div ng-show="!!home.selectedStock"> 
                     <h1 class="display-3">{{home.selectedStock.name }}</h1>
                     <label for="inputState"><strong>Price per share:</strong>&nbsp;</label> ${{ home.selectedStock.price}}
                     <br>
-                    <timer interval="1000" countdown="61"></timer>
+                    <!-- <timer interval="1000" countdown="61"></timer> -->
                     <br>
                     <button type="submit" class="btn btn-primary" ng-click="home.confirmShareBuy()">Confirm Buy</button> 
                     <br><br>
@@ -144,10 +142,10 @@
               <!-- ########################################### DISPLAY SUMMARY  ###########################################-->
               <div ng-show="home.showUserSummary">
                 <div ng-repeat="command in home.userSummary">
-                  <div> - {{ command.command}} {{ command.priceDollars }} <span ng-show="command.priceCents">.</span>{{ command.priceCents }}</div>
+                  <div> - {{ command.command}} {{ command.stock }} {{ command.priceDollars }} <span ng-show="command.priceCents">.</span>{{ command.priceCents }}</div>
                 </div>
               </div>
-              <div> 
+              <div ng-show="home.showAlert"> 
                 <br><br>
                 <div ng-show="home.displaySuccessAlert" class="alert alert-success" role="alert">
                   {{ home.successAlertText }}
