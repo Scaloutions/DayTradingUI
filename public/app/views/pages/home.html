@@ -117,14 +117,40 @@
             <!-- ########################################### TRIGGERS  ###########################################-->
             <div ng-show="home.showTriggers">
                 <h3>Triggers</h3>
-                <form class="form-inline">
+                <h4>Buy Triggers</h4>
+                <form class="form">
                     <div class="form-group">
-                        <label for="inputState"><strong>Select stock:</strong>&nbsp;</label>
-                        <select id="inputState" class="form-control" ng-model="home.selectedStock" 
-                          ng-options="stock.name for stock in home.stocks track by stock.name">
-                        </select>
+                        <label for="inputState"><strong>Stock: </strong>&nbsp;</label>
+                        <input type="text" class="form-control" ng-model="home.buyTriggerStockName"placeholder="Enter stock symbol to set trigger">
+                        <br>
+                        <label for="inputState"><strong>Buy price: </strong>&nbsp;</label>
+                        <input type="text" class="form-control" ng-model="home.buyTriggerPrice"placeholder="Enter CAD value to buy shares worth">
                       </div>
+                    <br>
+                    <button type="submit" class="btn btn-primary" ng-click="home.setBuyAmmount()">Set Buy Amount</button> 
+                    <br><br>
+                    <button type="submit" class="btn btn-primary" ng-click="home.confirmBuyTrigger()">Confirm Buy Trigger</button> 
+                    
+                      
                   </form>
+                  <br><br>
+                  <h4>Sell Triggers</h4>
+                  <form class="form">
+                      <div class="form-group">
+                          <label for="inputState"><strong>Stock: </strong>&nbsp;</label>
+                          <input type="text" class="form-control" ng-model="home.sellTriggerStockName"placeholder="Enter stock symbol to set trigger">
+                          <br>
+                          <label for="inputState"><strong>Sell price: </strong>&nbsp;</label>
+                          <input type="text" class="form-control" ng-model="home.sellTriggerPrice"placeholder="Enter CAD value to sell shares worth">
+                        </div>
+                        <br>
+                        <button type="submit" class="btn btn-primary" ng-click="">Confirm Sell Trigger</button> 
+                    </form>
+
+
+
+
+
                   <br>
                   <div ng-show="!!home.selectedStock"> 
                     <h1 class="display-3">{{home.selectedStock.name }}</h1>

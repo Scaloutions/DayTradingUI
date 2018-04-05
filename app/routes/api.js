@@ -33,7 +33,9 @@ module.exports = function(app, express) {
 // //######################## All routes below this will pass through the middleware before being served #############################
   apiRouter.use(function(req, res, next) {
   console.log('Somebody just came to our app!');
-  userHistory.push(req.body)
+  if (req.body.addToSummary) {
+    userHistory.push(req.body)
+  } 
   next(); // make sure we go to the next routes and don't stop here
   });
 
@@ -56,6 +58,44 @@ module.exports = function(app, express) {
     
 
   apiRouter.route('/addFunds')
+    .post(function(req, res) {
+      var reqOptions = {
+        method: 'POST',
+        uri: ServerURL + req.body.command,
+        body: constructRequestBody(req.body),
+        json: true
+      }
+    
+      httpRequest(reqOptions)
+        .then(function (result) {
+          res.json({ success: true, results: result})
+        })
+        .catch(function (err) {
+          console.log('#ERROR', err)
+          res.json({ success: false, err: err})
+        })
+    })
+
+    apiRouter.route('/set_buy_amount')
+    .post(function(req, res) {
+      var reqOptions = {
+        method: 'POST',
+        uri: ServerURL + req.body.command,
+        body: constructRequestBody(req.body),
+        json: true
+      }
+    
+      httpRequest(reqOptions)
+        .then(function (result) {
+          res.json({ success: true, results: result})
+        })
+        .catch(function (err) {
+          console.log('#ERROR', err)
+          res.json({ success: false, err: err})
+        })
+    })
+
+    apiRouter.route('/set_buy_trigger')
     .post(function(req, res) {
       var reqOptions = {
         method: 'POST',

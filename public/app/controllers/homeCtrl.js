@@ -1,3 +1,4 @@
+
 // Sample Controller
 angular.module('homeCtrl', ['homeService' ])
   
@@ -17,6 +18,7 @@ angular.module('homeCtrl', ['homeService' ])
     // vm.showBuyForm = true
     // vm.showFundsForm = true;
     // vm.showSellStocks = true;
+    vm.showTriggers = true
 
     
     vm.stocks = [
@@ -51,14 +53,84 @@ angular.module('homeCtrl', ['homeService' ])
       vm.showFundsForm = true;
     }
 
-    vm.confirmAddFunds = function(funds) {
-      if (vm.fundsToAdd > 0) {
-        var splited = vm.fundsToAdd.split(".")
+    vm.setBuyAmmount = function(funds) {
+      if (vm.buyTriggerPrice > 0) {
         var body = {
           userid: '123',
-          priceDollars: parseInt(splited[0]),
-          priceCents: parseInt(splited[1]),
+          priceDollars: parseFloat(vm.buyTriggerPrice),
+          priceCents: 0,
+          command: 'set_buy_amount',
+          stock: vm.buyTriggerStockName,
+          addToSummary: true,
+          commandNumber: 1
+        }
+        
+        var reqOptions = {
+          method: 'POST',
+          url: 'api/set_buy_amount',
+          headers: vm.commonHeaders,
+          data: body
+         }
+
+         $http(reqOptions)
+          .then(function(results) {
+            console.log('results are: ', results.data)
+            if (results.data.success) {
+              showSuccessAlert('Set buy amount was successful!')
+            } else {
+              showErrorAlert('Set buy amount was not successful!')
+            }
+          }, function(err) {
+            if (!results.data.success) {
+              showErrorAlert('Something went wrong!')
+            }
+          })
+      }
+    }
+
+    vm.confirmBuyTrigger = function(funds) {
+      if (vm.buyTriggerPrice > 0) {
+        var body = {
+          userid: '123',
+          priceDollars: parseFloat(vm.buyTriggerPrice),
+          priceCents: 0,
+          command: 'set_buy_trigger',
+          stock: vm.buyTriggerStockName,
+          addToSummary: true,
+          commandNumber: 1
+        }
+        
+        var reqOptions = {
+          method: 'POST',
+          url: 'api/set_buy_trigger',
+          headers: vm.commonHeaders,
+          data: body
+         }
+
+         $http(reqOptions)
+          .then(function(results) {
+            console.log('results are: ', results.data)
+            if (results.data.success) {
+              showSuccessAlert('Set buy trigger was successful!')
+            } else {
+              showErrorAlert('Set buy trigger was not successful!')
+            }
+          }, function(err) {
+            if (!results.data.success) {
+              showErrorAlert('Something went wrong!')
+            }
+          })
+      }
+    }
+
+    vm.confirmAddFunds = function(funds) {
+      if (vm.fundsToAdd > 0) {
+        var body = {
+          userid: '123',
+          priceDollars: parseFloat(vm.fundsToAdd),
+          priceCents: 0,
           command: 'add',
+          addToSummary: true,
           commandNumber: 1
         }
         
@@ -91,10 +163,11 @@ angular.module('homeCtrl', ['homeService' ])
         var splited = vm.totalSharePrice.split(".")
         var body = {
           userid: '123',
-          priceDollars: parseInt(splited[0]),
-          priceCents: parseInt(splited[1]),
+          priceDollars: parseFloat(vm.totalSharePrice),
+          priceCents: 0,
           stock: 'S',
           command: 'sell',
+          addToSummary: true,          
           commandNumber: 1
         }
         
@@ -131,6 +204,7 @@ angular.module('homeCtrl', ['homeService' ])
       var body = {
         userid: '123',
         command: 'commit_sell',
+        addToSummary: true,        
         commandNumber: 1
       }
       
@@ -158,6 +232,7 @@ angular.module('homeCtrl', ['homeService' ])
     vm.cancelSell = function() {
       var body = {
         userid: '123',
+        addToSummary: true,
         command: 'cancel_sell',
         commandNumber: 1
       }
@@ -185,11 +260,11 @@ angular.module('homeCtrl', ['homeService' ])
     // BUY
     vm.confirmShareBuy = function() {
       if (vm.totalSharePrice > 0) {
-        var splited = vm.totalSharePrice.split(".")
         var body = {
           userid: '123',
-          priceDollars: parseInt(splited[0]),
-          priceCents: parseInt(splited[1]),
+          priceDollars: parseFloat(vm.totalSharePrice),
+          priceCents: 0,
+          addToSummary: true,          
           command: 'buy',
           stock: 'S',
           commandNumber: 1
@@ -225,6 +300,7 @@ angular.module('homeCtrl', ['homeService' ])
     vm.commitBuy = function() {
       var body = {
         userid: '123',
+        addToSummary: true,        
         command: 'commit_buy',
         commandNumber: 1
       }
@@ -255,6 +331,7 @@ angular.module('homeCtrl', ['homeService' ])
       var body = {
         userid: '123',
         command: 'cancel_buy',
+        addToSummary: true,        
         commandNumber: 1
       }
       
@@ -282,6 +359,7 @@ angular.module('homeCtrl', ['homeService' ])
       var body = {
         userid: '123',
         command: 'display_summary',
+        addToSummary: true, 
         commandNumber: 1
       }
       
@@ -311,6 +389,7 @@ angular.module('homeCtrl', ['homeService' ])
         userid: '123',
         command: 'quote',
         stock: index.name,
+        addToSummary: true, 
         commandNumber: 1
       }
 
