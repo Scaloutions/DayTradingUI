@@ -18,7 +18,7 @@ angular.module('homeCtrl', ['homeService' ])
     // vm.showBuyForm = true
     // vm.showFundsForm = true;
     // vm.showSellStocks = true;
-    vm.showTriggers = true
+    // vm.showTriggers = true
     // vm.showQuote = true
 
     

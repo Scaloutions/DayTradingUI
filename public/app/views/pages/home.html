@@ -167,23 +167,6 @@
                         <button type="submit" class="btn btn-primary" ng-click="home.cancelSetSellTrigger()">Cancel Set Buy Trigger</button> 
                         
                       </form>
-
-
-
-
-
-                  <br>
-                  <div ng-show="!!home.selectedStock"> 
-                    <h1 class="display-3">{{home.selectedStock.name }}</h1>
-                    <label for="inputState"><strong>Price per share:</strong>&nbsp;</label> ${{ home.selectedStock.price}}
-                    <br>
-                    <!-- <timer interval="1000" countdown="61"></timer> -->
-                    <br>
-                    <button type="submit" class="btn btn-primary" ng-click="home.confirmShareBuy()">Confirm Buy</button> 
-                    <br><br>
-                    <button  ng-show="home.showCommitBuy" type="submit" class="btn btn-primary" ng-click="home.commitBuy()">Commit Buy</button> 
-                    <button  ng-show="home.showCancelBuy" type="submit" class="btn btn-primary" ng-click="home.cancelBuy()">Cancel Buy</button> 
-                  </div>
               </div>
 
               <!-- ########################################### DISPLAY SUMMARY  ###########################################-->
