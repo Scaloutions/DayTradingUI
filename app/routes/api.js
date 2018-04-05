@@ -39,21 +39,59 @@ module.exports = function(app, express) {
   next(); // make sure we go to the next routes and don't stop here
   });
 
-  apiRouter.route('/quote')
-    .post(function(req, res) {
-      var stock = {
-        stock: req.body.stock,
-        price: Math.random()*200
-      }
-      res.json({ 
-        success: true, 
-        results: stock
-      })
-    })
+  // apiRouter.route('/quote')
+  //   .post(function(req, res) {
+  //     var stock = {
+  //       stock: req.body.stock,
+  //       price: Math.random()*200
+  //     }
+  //     res.json({ 
+  //       success: true, 
+  //       results: stock
+  //     })
+  //   })
 
   apiRouter.route('/display_summary')
     .post(function(req, res) {
       res.json({ success: true, results: userHistory})
+    })
+
+    apiRouter.route('/quote')
+    .post(function(req, res) {
+      var reqOptions = {
+        method: 'POST',
+        uri: ServerURL + req.body.command,
+        body: constructRequestBody(req.body),
+        json: true
+      }
+    
+      httpRequest(reqOptions)
+        .then(function (result) {
+          res.json({ success: true, results: result})
+        })
+        .catch(function (err) {
+          console.log('#ERROR', err)
+          res.json({ success: false, err: err})
+        })
+    })
+
+    apiRouter.route('/dumplog')
+    .post(function(req, res) {
+      var reqOptions = {
+        method: 'POST',
+        uri: ServerURL + req.body.command,
+        body: constructRequestBody(req.body),
+        json: true
+      }
+    
+      httpRequest(reqOptions)
+        .then(function (result) {
+          res.json({ success: true, results: result})
+        })
+        .catch(function (err) {
+          console.log('#ERROR', err)
+          res.json({ success: false, err: err})
+        })
     })
     
 
@@ -96,6 +134,44 @@ module.exports = function(app, express) {
     })
 
     apiRouter.route('/set_buy_trigger')
+    .post(function(req, res) {
+      var reqOptions = {
+        method: 'POST',
+        uri: ServerURL + req.body.command,
+        body: constructRequestBody(req.body),
+        json: true
+      }
+    
+      httpRequest(reqOptions)
+        .then(function (result) {
+          res.json({ success: true, results: result})
+        })
+        .catch(function (err) {
+          console.log('#ERROR', err)
+          res.json({ success: false, err: err})
+        })
+    })
+
+    apiRouter.route('/set_sell_amount')
+    .post(function(req, res) {
+      var reqOptions = {
+        method: 'POST',
+        uri: ServerURL + req.body.command,
+        body: constructRequestBody(req.body),
+        json: true
+      }
+    
+      httpRequest(reqOptions)
+        .then(function (result) {
+          res.json({ success: true, results: result})
+        })
+        .catch(function (err) {
+          console.log('#ERROR', err)
+          res.json({ success: false, err: err})
+        })
+    })
+
+    apiRouter.route('/set_sell_trigger')
     .post(function(req, res) {
       var reqOptions = {
         method: 'POST',

@@ -13,12 +13,13 @@ angular.module('homeCtrl', ['homeService' ])
     vm.selectedStock = ""
     vm.fundsToAdd = ""
 
-    vm.userName = "Chris"
+    vm.userName = "123"
 
     // vm.showBuyForm = true
     // vm.showFundsForm = true;
     // vm.showSellStocks = true;
-    vm.showTriggers = true
+    // vm.showTriggers = true
+    vm.showQuote = true
 
     
     vm.stocks = [
@@ -33,6 +34,37 @@ angular.module('homeCtrl', ['homeService' ])
       }
     ]
 
+    vm.getDumplog = function() {
+      var body = {
+        userid: '123',
+        command: 'dumplog',
+        addToSummary: true,
+        commandNumber: 1
+      }
+      
+      var reqOptions = {
+        method: 'POST',
+        url: 'api/dumplog',
+        headers: vm.commonHeaders,
+        data: body
+       }
+
+       $http(reqOptions)
+        .then(function(results) {
+          console.log('results are: ', results.data)
+          if (results.data.success) {
+            vm.dumplog = results.data
+            showSuccessAlert('Dumplog was successful!')
+          } else {
+            showErrorAlert('Dumplog was not successful!')
+          }
+        }, function(err) {
+          if (!results.data.success) {
+            showErrorAlert(results.data.err.error.error)
+          }
+        })
+    }
+
     startTimer = function(timerParentId) {
       var currentTimer = angular.element(document.getElementById('runningTimer'));
       if (currentTimer) {
@@ -42,6 +74,13 @@ angular.module('homeCtrl', ['homeService' ])
       var timer = angular.element(document.createElement('timer'));
       timer.attr('interval', '1000');
       timer.attr('id', 'runningTimer');
+
+      if (timerParentId === 'quoteTimerForSell') {
+        timer.attr('timertype', 'sell');
+      } else {
+        timer.attr('timertype', 'buy');
+      }
+      
       var el = $compile(timer)($scope);
 
       angular.element(document.getElementById(timerParentId)).append(timer);
@@ -51,6 +90,76 @@ angular.module('homeCtrl', ['homeService' ])
 
     vm.addFunds = function() {
       vm.showFundsForm = true;
+    }
+
+    vm.setSellAmount = function(funds) {
+      if (vm.sellTriggerPrice > 0) {
+        var body = {
+          userid: '123',
+          priceDollars: parseFloat(vm.sellTriggerPrice),
+          priceCents: 0,
+          command: 'set_sell_amount',
+          stock: vm.sellTriggerStockName,
+          addToSummary: true,
+          commandNumber: 1
+        }
+        
+        var reqOptions = {
+          method: 'POST',
+          url: 'api/set_sell_amount',
+          headers: vm.commonHeaders,
+          data: body
+         }
+
+         $http(reqOptions)
+          .then(function(results) {
+            console.log('results are: ', results.data)
+            if (results.data.success) {
+              showSuccessAlert('Set sell amount was successful!')
+            } else {
+              showErrorAlert(results.data.err.error.error)
+            }
+          }, function(err) {
+            if (!results.data.success) {
+              showErrorAlert('Something went wrong!')
+            }
+          })
+      }
+    }
+
+    vm.confirmSellTrigger = function(funds) {
+      if (vm.sellTriggerPrice > 0) {
+        var body = {
+          userid: '123',
+          priceDollars: parseFloat(vm.sellTriggerPrice),
+          priceCents: 0,
+          command: 'set_sell_trigger',
+          stock: vm.sellTriggerStockName,
+          addToSummary: true,
+          commandNumber: 1
+        }
+        
+        var reqOptions = {
+          method: 'POST',
+          url: 'api/set_sell_trigger',
+          headers: vm.commonHeaders,
+          data: body
+         }
+
+         $http(reqOptions)
+          .then(function(results) {
+            console.log('results are: ', results.data)
+            if (results.data.success) {
+              showSuccessAlert('Set sell trigger was successful!')
+            } else {
+              showErrorAlert(results.data.err.error.error)
+            }
+          }, function(err) {
+            if (!results.data.success) {
+              showErrorAlert('Something went wrong!')
+            }
+          })
+      }
     }
 
     vm.setBuyAmmount = function(funds) {
@@ -78,10 +187,11 @@ angular.module('homeCtrl', ['homeService' ])
             if (results.data.success) {
               showSuccessAlert('Set buy amount was successful!')
             } else {
-              showErrorAlert('Set buy amount was not successful!')
+              showErrorAlert(results.data.err.error.error)
             }
           }, function(err) {
             if (!results.data.success) {
+              console.log('inhere: ', err)
               showErrorAlert('Something went wrong!')
             }
           })
@@ -159,13 +269,14 @@ angular.module('homeCtrl', ['homeService' ])
 
     // SELL
     vm.confirmShareSell = function(funds) {
+      startTimer('quoteTimerForSell')
       if (vm.totalSharePrice > 0) {
         var splited = vm.totalSharePrice.split(".")
         var body = {
           userid: '123',
           priceDollars: parseFloat(vm.totalSharePrice),
           priceCents: 0,
-          stock: 'S',
+          stock: vm.selectedStock,
           command: 'sell',
           addToSummary: true,          
           commandNumber: 1
@@ -186,7 +297,7 @@ angular.module('homeCtrl', ['homeService' ])
               vm.showCommitSell = true;
               vm.showCancelSell = true;
             } else {
-              showErrorAlert('Something went wrong!')
+              showErrorAlert(results.data.err.error.error)
               // REMOVE LATER 
               vm.showCommitSell = true;
               vm.showCancelSell = true;
@@ -221,7 +332,8 @@ angular.module('homeCtrl', ['homeService' ])
           if (results.data.success) {
             showSuccessAlert('Sell was successfully commited!')
           } else {
-            showErrorAlert('Something went wrong!')
+            // showErrorAlert('Something went wrong!')
+            showErrorAlert(results.data.err.error.error)
           }
         }, function(err) {
           console.log('err: ', err)
@@ -250,7 +362,8 @@ angular.module('homeCtrl', ['homeService' ])
           if (results.data.success) {
             showSuccessAlert('Sell was successfully cancelled!')
           } else {
-            showErrorAlert('Something went wrong!')
+            showErrorAlert(results.data.err.error.error)
+            // showErrorAlert('Something went wrong!')
           }
         }, function(err) {
           console.log('err: ', err)
@@ -259,6 +372,7 @@ angular.module('homeCtrl', ['homeService' ])
 
     // BUY
     vm.confirmShareBuy = function() {
+      startTimer('quoteTimerForBuy')
       if (vm.totalSharePrice > 0) {
         var body = {
           userid: '123',
@@ -285,7 +399,7 @@ angular.module('homeCtrl', ['homeService' ])
               vm.showCommitBuy = true;
               vm.showCancelBuy = true;
             } else {
-              showErrorAlert('Something went wrong!')
+              showErrorAlert(results.data.err.error.error)
               // REMOVE THIS LATER:
               vm.showCommitBuy = true;
               vm.showCancelBuy = true;
@@ -318,7 +432,7 @@ angular.module('homeCtrl', ['homeService' ])
           if (results.data.success) {
             showSuccessAlert('Buy was successfully commited!')
           } else {
-            showErrorAlert('Something went wrong!')
+            showErrorAlert(results.data.err.error.error)
           }
         }, function(err) {
           console.log('err: ', err)
@@ -348,7 +462,8 @@ angular.module('homeCtrl', ['homeService' ])
           if (results.data.success) {
             showSuccessAlert('Buy was successfully cancelled!')
           } else {
-            showErrorAlert('Something went wrong!')
+            showErrorAlert(results.data.err.error.error)
+
           }
         }, function(err) {
           console.log('err: ', err)
@@ -376,7 +491,7 @@ angular.module('homeCtrl', ['homeService' ])
           if (results.data.success) {
             vm.userSummary = results.data.results
           } else {
-            showErrorAlert('Something went wrong!')
+            showErrorAlert(results.data.err.error.error)
           }
         }, function(err) {
           console.log('err: ', err)
@@ -388,7 +503,7 @@ angular.module('homeCtrl', ['homeService' ])
       var body = {
         userid: '123',
         command: 'quote',
-        stock: index.name,
+        stock: vm.selectedStockName,
         addToSummary: true, 
         commandNumber: 1
       }
@@ -404,11 +519,10 @@ angular.module('homeCtrl', ['homeService' ])
       .then(function(results) {
         console.log('Quote results are: ', results.data)
         if (results.data.success) {
-          startTimer(timerParentId)
-          vm.userSummary = results.data.results
-          index.price = results.data.results.price
+          // startTimer(timerParentId)
+          vm.selectedStockPrice = results.data.results.quote
         } else {
-          showErrorAlert('Something went wrong!')
+          showErrorAlert(results.data.err.error.error)
         }
       }, function(err) {
         console.log('err: ', err)
@@ -471,7 +585,8 @@ angular.module('homeCtrl', ['homeService' ])
       scope: {
         interval: '=', //don't need to write word again, if property name matches HTML attribute name
         startTimeAttr: '=?startTime', //a question mark makes it optional
-        countdownAttr: '=?countdown' //what unit?
+        countdownAttr: '=?countdown', //what unit?
+        timertype: '=',
       },
       template: '<div ><p>'+
         '<p ng-show="!expired">Quote expires in :'+
@@ -482,6 +597,8 @@ angular.module('homeCtrl', ['homeService' ])
       
         //Properties
         scope.startTime = scope.startTimeAttr ? new Date(scope.startTimeAttr) : new Date();
+        scope.timerType = attrs.timertype
+        console.log('TYPE: ',scope.timertype, scope , attrs)
         scope.expired = false;
         var countdown = 10; //defaults to 60 seconds
         
@@ -489,7 +606,7 @@ angular.module('homeCtrl', ['homeService' ])
           
           //How many milliseconds have passed: current time - start time
           scope.millis = new Date() - scope.startTime;
-          console.log('countdown is:', countdown)
+          // console.log('countdown is:', countdown)
           if (countdown > 0) {
             scope.millis = countdown * 1000;
             countdown--;
@@ -499,32 +616,62 @@ angular.module('homeCtrl', ['homeService' ])
             console.log('Your time is up!');
 
 
-            var body = {
-              userid: '123',
-              command: 'cancel_buy',
-              commandNumber: 1
-            }
-            
-            var reqOptions = {
-              method: 'POST',
-              url: 'api/cancel_buy',
-              headers:  {
-                'Content-Type': "application/json"
-              },
-              data: body
+            if (scope.timerType === 'sell') {
+              var body = {
+                userid: '123',
+                command: 'cancel_sell',
+                commandNumber: 1
               }
-      
-              $http(reqOptions)
-              .then(function(results) {
-                console.log('results are: ', results.data)
-                if (results.data.success) {
-                  console.log('Buy was successfully cancelled!')
-                } else {
-                  console.log('Something went wrong!')
+              
+              var reqOptions = {
+                method: 'POST',
+                url: 'api/cancel_sell',
+                headers:  {
+                  'Content-Type': "application/json"
+                },
+                data: body
                 }
-              }, function(err) {
-                console.log('err: ', err)
-              })
+        
+                $http(reqOptions)
+                .then(function(results) {
+                  console.log('results are: ', results.data)
+                  if (results.data.success) {
+                    console.log('Buy was successfully cancelled!')
+                  } else {
+                    console.log('Something went wrong!')
+                  }
+                }, function(err) {
+                  console.log('err: ', err)
+                })
+            } else {
+              var body = {
+                userid: '123',
+                command: 'cancel_buy',
+                commandNumber: 1
+              }
+              
+              var reqOptions = {
+                method: 'POST',
+                url: 'api/cancel_buy',
+                headers:  {
+                  'Content-Type': "application/json"
+                },
+                data: body
+                }
+        
+                $http(reqOptions)
+                .then(function(results) {
+                  console.log('results are: ', results.data)
+                  if (results.data.success) {
+                    console.log('Buy was successfully cancelled!')
+                  } else {
+                    console.log('Something went wrong!')
+                  }
+                }, function(err) {
+                  console.log('err: ', err)
+                })
+            }
+           
           }
       
           scope.seconds = Math.floor((scope.millis / 1000) % 60);
