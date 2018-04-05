@@ -1,0 +1,168 @@
+<div class="row " ng-controller="homeController as home">
+    <div class="col-sm-4 jumbotron mx-auto">
+        <button type="button" class="btn btn-block btn-outline-success" ng-click="home.showTriggers = false; home.showQuote = false; home.showFundsForm = true; home.showBuyForm = false; home.showSellStocks = false;">Add Funds</button>
+        <br><br>
+        <button type="button" class="btn btn-block btn-outline-success"ng-click="home.showTriggers = false; home.showQuote = false; home.showFundsForm = false; home.showBuyForm = true; home.showSellStocks = false;">BUY</button>
+        <br><br>
+        <button type="button" class="btn btn-block btn-outline-danger" ng-click="home.showTriggers = false; home.showQuote = false; home.showFundsForm = false; home.showBuyForm = false; home.showSellStocks = true;">SELL</button>
+        <br><br>
+        <button type="button" class="btn btn-block btn-outline-primary" ng-click="home.showTriggers = false; home.showQuote = true; home.showFundsForm = false; home.showBuyForm = false; home.showSellStocks = false;">QUOTE</button>
+        <br><br>
+        <button type="button" class="btn btn-block btn-outline-dark" ng-click="home.showTriggers = true; home.showQuote = false; home.showFundsForm = false; home.showBuyForm = false; home.showSellStocks = false;">TRIGGERS</button>
+        <br><br>
+        <button type="button" class="btn btn-block btn-outline-info" ng-click="home.getSummary(); home.showTriggers = false; home.showQuote = false; home.showFundsForm = false; home.showBuyForm = false; home.showSellStocks = false;">SUMMARY</button>
+        <br><br>
+        <button type="button" class="btn btn-block btn-outline-info">CLEAR ALERTS</button>
+        <br><br>
+    </div>
+
+
+    <div class="col-sm-8">
+      <div class="jumbotron jumbotron-fluid">
+          <div class="container">
+
+            <!-- ########################################### BUY STOCKS ###########################################-->
+            <div ng-show="home.showBuyForm">
+              <h3>Buy Stocks</h3>
+              <form class="form-inline">
+                  <div class="form-group">
+                      <label for="inputState"><strong>Select stock:</strong>&nbsp;</label>
+                      <select id="inputState" class="form-control" ng-model="home.selectedStock" 
+                        ng-options="stock.name for stock in home.stocks track by stock.name" 
+                        ng-change="home.getNewQuote(home.selectedStock)">
+                      </select>
+                    </div>
+                    <br>
+                </form>
+                <br>
+                <label for="inputState"><strong>Buy shares worth: </strong>&nbsp;</label>
+                <input type="text" class="form-control" ng-model="home.totalSharePrice"placeholder="Enter CAD value to buy shares worth">
+  
+                <br><br>
+                <div ng-show="!!home.selectedStock"> 
+                  <h1 class="display-3">{{home.selectedStock.name }}</h1>
+                  <label for="inputState"><strong>Price per share:</strong>&nbsp;</label> ${{ home.selectedStock.price}}
+                  <br>
+                  <timer interval="1000" countdown="61"></timer>
+                  <br>
+                  <button type="submit" class="btn btn-primary" ng-click="home.confirmShareBuy()">Confirm Buy</button> 
+                  <br><br>
+                  <button  ng-show="home.showCommitBuy" type="submit" class="btn btn-primary" ng-click="home.commitBuy()">Commit Buy</button> 
+                  <button  ng-show="home.showCancelBuy" type="submit" class="btn btn-primary" ng-click="home.cancelBuy()">Cancel Buy</button> 
+                </div>
+            </div>
+
+            <!-- ########################################### ADD FUNDS ###########################################-->
+            <div ng-show="home.showFundsForm">
+                <h3>Add Funds</h3>
+                <form class="form">
+                    <div class="form-group">
+                      <label for="inputState"><strong>User: </strong>&nbsp;</label> {{ home.userName }}
+                      <br><br>
+                      <label for="inputState"><strong>Amount: </strong>&nbsp;</label>
+                      <input type="text" class="form-control" ng-model="home.fundsToAdd"placeholder="Enter CAD amount to add ">
+                    </div>
+                    <button type="submit" class="btn btn-primary" ng-click="home.confirmAddFunds(home.fundsToAdd)">Confirm Add</button> 
+                    
+                    
+                </form>
+              </div>
+
+              <!-- ########################################### SELL STOCKS  ###########################################-->
+              <div ng-show="home.showSellStocks">
+                  <h3>Sell Stocks</h3>
+                  <form class="form-inline">
+                      <div class="form-group">
+                          <label for="inputState"><strong>Select stock:</strong>&nbsp;</label>
+                          <select id="inputState" class="form-control" ng-model="home.selectedStock" 
+                            ng-options="stock.name for stock in home.stocks track by stock.name">
+                          </select>
+                        </div>
+                        <br>
+                    </form>
+                    <br>
+                    <label for="inputState"><strong>Sell shares worth: </strong>&nbsp;</label>
+                    <input type="text" class="form-control" ng-model="home.totalSharePrice" placeholder="Enter CAD value to sell shares worth">
+      
+                    <br><br>
+                    <div ng-show="!!home.selectedStock"> 
+                      <button type="submit" class="btn btn-primary" ng-click="home.confirmShareSell()">Confirm Sell</button> 
+                      <br><br>
+                      <button  ng-show="home.showCommitSell" type="submit" class="btn btn-primary" ng-click="home.commitSell()">Commit Sell</button> 
+                      <button  ng-show="home.showCancelSell" type="submit" class="btn btn-primary" ng-click="home.cancelSell()">Cancel Sell</button> 
+                    </div>
+                </div>
+
+                <!-- ########################################### QUOTE ###########################################-->
+            <div ng-show="home.showQuote">
+                <h3>Get Quote</h3>
+                <form class="form-inline">
+                    <div class="form-group">
+                        <label for="inputState"><strong>Select stock:</strong>&nbsp;</label>
+                        <select id="inputState" class="form-control" ng-model="home.selectedStock" 
+                          ng-options="stock.name for stock in home.stocks track by stock.name">
+                        </select>
+                      </div>
+                      <br>
+                  </form>
+                  <br>
+                  <div ng-show="!!home.selectedStock"> 
+                    <h1 class="display-3">{{home.selectedStock.name }}</h1>
+                    <label for="inputState"><strong>Price per share:</strong>&nbsp;</label> ${{ home.selectedStock.price}}
+                    <br>
+                    <timer interval="1000" countdown="61"></timer>
+                  </div>
+              </div>
+
+              <!-- ########################################### TRIGGERS  ###########################################-->
+            <div ng-show="home.showTriggers">
+                <h3>Triggers</h3>
+                <form class="form-inline">
+                    <div class="form-group">
+                        <label for="inputState"><strong>Select stock:</strong>&nbsp;</label>
+                        <select id="inputState" class="form-control" ng-model="home.selectedStock" 
+                          ng-options="stock.name for stock in home.stocks track by stock.name">
+                        </select>
+                      </div>
+                      <br>
+                  </form>
+                  <br>
+                  <br><br>
+                  <div ng-show="!!home.selectedStock"> 
+                    <h1 class="display-3">{{home.selectedStock.name }}</h1>
+                    <label for="inputState"><strong>Price per share:</strong>&nbsp;</label> ${{ home.selectedStock.price}}
+                    <br>
+                    <timer interval="1000" countdown="61"></timer>
+                    <br>
+                    <button type="submit" class="btn btn-primary" ng-click="home.confirmShareBuy()">Confirm Buy</button> 
+                    <br><br>
+                    <button  ng-show="home.showCommitBuy" type="submit" class="btn btn-primary" ng-click="home.commitBuy()">Commit Buy</button> 
+                    <button  ng-show="home.showCancelBuy" type="submit" class="btn btn-primary" ng-click="home.cancelBuy()">Cancel Buy</button> 
+                  </div>
+              </div>
+
+              <!-- ########################################### DISPLAY SUMMARY  ###########################################-->
+              <div ng-show="home.userSummary">
+                yo
+                <div ng-repeat="command in home.userSummary">
+                  <div> - {{ command.command}} {{ command.priceDollars }} <span ng-show="command.priceCents">.</span>{{ command.priceCents }}</div>
+                </div>
+              </div>
+              <div> 
+                <br><br>
+                <div ng-show="home.displaySuccessAlert" class="alert alert-success" role="alert">
+                  {{ home.successAlertText }}
+                </div>
+                <div ng-show="home.displayErrAlert" class="alert alert-danger" role="alert">
+                  {{ home.ErrAlertText }}
+                </div>
+              </div>
+              
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
