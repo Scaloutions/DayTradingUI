@@ -18,8 +18,8 @@ angular.module('homeCtrl', ['homeService' ])
     // vm.showBuyForm = true
     // vm.showFundsForm = true;
     // vm.showSellStocks = true;
-    // vm.showTriggers = true
-    vm.showQuote = true
+    vm.showTriggers = true
+    // vm.showQuote = true
 
     
     vm.stocks = [
@@ -90,6 +90,68 @@ angular.module('homeCtrl', ['homeService' ])
 
     vm.addFunds = function() {
       vm.showFundsForm = true;
+    }
+
+    vm.cancelSetBuyTrigger = function() {
+      var body = {
+        userid: '123',
+        command: 'cancel_set_buy',
+        stock: vm.buyTriggerStockName,
+        addToSummary: true,
+        commandNumber: 1
+      }
+      
+      var reqOptions = {
+        method: 'POST',
+        url: 'api/cancel_set_buy',
+        headers: vm.commonHeaders,
+        data: body
+       }
+
+       $http(reqOptions)
+        .then(function(results) {
+          console.log('results are: ', results.data)
+          if (results.data.success) {
+            showSuccessAlert('Cancel set buy was successful!')
+          } else {
+            showErrorAlert(results.data.err.error.error)
+          }
+        }, function(err) {
+          if (!results.data.success) {
+            showErrorAlert('Something went wrong!')
+          }
+        })
+    }
+
+    vm.cancelSetSellTrigger = function() {
+      var body = {
+        userid: '123',
+        command: 'cancel_set_sell',
+        stock: vm.sellTriggerStockName,
+        addToSummary: true,
+        commandNumber: 1
+      }
+      
+      var reqOptions = {
+        method: 'POST',
+        url: 'api/cancel_set_sell',
+        headers: vm.commonHeaders,
+        data: body
+       }
+
+       $http(reqOptions)
+        .then(function(results) {
+          console.log('results are: ', results.data)
+          if (results.data.success) {
+            showSuccessAlert('Cancel set buy was successful!')
+          } else {
+            showErrorAlert(results.data.err.error.error)
+          }
+        }, function(err) {
+          if (!results.data.success) {
+            showErrorAlert('Something went wrong!')
+          }
+        })
     }
 
     vm.setSellAmount = function(funds) {

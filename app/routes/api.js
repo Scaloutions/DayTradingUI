@@ -56,6 +56,44 @@ module.exports = function(app, express) {
       res.json({ success: true, results: userHistory})
     })
 
+    apiRouter.route('/cancel_set_buy')
+    .post(function(req, res) {
+      var reqOptions = {
+        method: 'POST',
+        uri: ServerURL + req.body.command,
+        body: constructRequestBody(req.body),
+        json: true
+      }
+    
+      httpRequest(reqOptions)
+        .then(function (result) {
+          res.json({ success: true, results: result})
+        })
+        .catch(function (err) {
+          console.log('#ERROR', err)
+          res.json({ success: false, err: err})
+        })
+    })
+
+    apiRouter.route('/cancel_set_sell')
+    .post(function(req, res) {
+      var reqOptions = {
+        method: 'POST',
+        uri: ServerURL + req.body.command,
+        body: constructRequestBody(req.body),
+        json: true
+      }
+    
+      httpRequest(reqOptions)
+        .then(function (result) {
+          res.json({ success: true, results: result})
+        })
+        .catch(function (err) {
+          console.log('#ERROR', err)
+          res.json({ success: false, err: err})
+        })
+    })
+
     apiRouter.route('/quote')
     .post(function(req, res) {
       var reqOptions = {

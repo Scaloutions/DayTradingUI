@@ -120,7 +120,7 @@
                   </form>
                   <br>
                   <div ng-show="!!home.selectedStockName"> 
-                    <h1 class="display-3">{{home.selectedStockName }}</h1>
+                    <h2 class="display-4">{{home.selectedStockName }}</h2>
                     <label for="inputState"><strong>Price per share:</strong>&nbsp;</label> ${{ home.selectedStockPrice}}
                     <br>
                     <div id="quoteTimer"></div>
@@ -144,6 +144,8 @@
                     <button type="submit" class="btn btn-primary" ng-click="home.setBuyAmmount()">Set Buy Amount</button> 
                     <br><br>
                     <button type="submit" class="btn btn-primary" ng-click="home.confirmBuyTrigger()">Confirm Buy Trigger</button> 
+                    <br><br>
+                    <button type="submit" class="btn btn-primary" ng-click="home.cancelSetBuyTrigger()">Cancel Set Buy Trigger</button> 
                     
                       
                   </form>
@@ -161,7 +163,10 @@
                         <button type="submit" class="btn btn-primary" ng-click="home.setSellAmount()">Set Sell Amount</button> 
                         <br><br>
                         <button type="submit" class="btn btn-primary" ng-click="home.confirmSellTrigger()">Confirm Sell Trigger</button> 
-                    </form>
+                        <br><br>
+                        <button type="submit" class="btn btn-primary" ng-click="home.cancelSetSellTrigger()">Cancel Set Buy Trigger</button> 
+                        
+                      </form>
 
 
 
